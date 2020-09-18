@@ -24,4 +24,6 @@ const MetaInfo = ({data = null})=>{
     )
 }
 
+
+
 export default MetaInfo;
