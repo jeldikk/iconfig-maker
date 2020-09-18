@@ -1,0 +1,15 @@
+.footer-style{
+  position: absolute;
+  bottom: 0px;
+  padding: 5px;
+  width: 100%;
+  font-size: 15px;
+  background-color: black;
+  color: greenyellow;
+  font-weight:bold;
+  font-family: monospace;
+}
+
+.footer-style:hover{
+  cursor: auto;
+}
