@@ -1,6 +1,6 @@
 import React from 'react'
 import {useState, useEffect} from 'react'
-import {channels} from "../../shared"
+import {channels, operations, datatypes} from "../../shared"
 import MetaInfo from "../components/MetaInfo"
 import FieldList from "../components/FieldList"
 import OutputInfo from "../components/OutputInfo"
@@ -29,13 +29,13 @@ const NewFile = ({data=null})=>{
 
     if(!configstate){
 
-        ipcRenderer.once(channels.GET_CONFIGDATA,(event, message)=>{
+        ipcRenderer.once(channels.CONFIGURATION,(event, method, dtype, arg)=>{
             console.log("data on initconfig is ");
-            console.log(message);
-            setConfigState(message)
+            console.log(arg);
+            setConfigState(arg)
           })
         console.log("config value is null")
-        ipcRenderer.send(channels.GET_CONFIGDATA, 'newFile')
+        ipcRenderer.send(channels.CONFIGURATION, operations.READ, 'default', 'default')
 
     }
 

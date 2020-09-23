@@ -11,10 +11,12 @@ const url = require("url");
 const path = require("path");
 
 const { MenuTemplate } = require("./electron/menu_template");
-const { channels } = require("../src/shared");
+const { channels, operations, datatypes } = require("../src/shared");
 const { Configuration } = require("../src/shared/configuration");
 
-// console.log(channels);
+console.log(channels);
+console.log(operations);
+console.log(datatypes)
 
 let mainWindow = null;
 let editDialog = null;
@@ -107,9 +109,82 @@ app.on("window-all-closed", () => {
   app.quit();
 });
 
+
+// this is for menu sub-item Add New Field
 const NavigateToLink = (exports.NavigateToLink = (link) => {
-  mainWindow.webContents.send(channels.NAVIGATE_TO, link);
+  mainWindow.webContents.send(channels.NAVIGATE, link);
 });
+
+ipcMain.on(channels.CONFIGURATION, (event, method, dtype, arg)=>{
+  // console.log(method, dtype, arg)
+  switch(method){
+    case operations.CREATE:
+      switch(dtype){
+        case datatypes.METAINFO:
+          // create metainfo
+          break;
+        case datatypes.FIELD:
+          // create field
+          break;
+        case datatypes.PLOT:
+          // create plot item
+          break;
+        default:
+          // create new global store
+          
+      }
+      break;
+    case operations.READ:
+      switch(dtype){
+        case datatypes.METAINFO:
+          console.log("I am in read metainfo")
+          // get metainfo
+          break;
+        case datatypes.FIELD:
+          // get field
+          break;
+        case datatypes.PLOT:
+          // get plot
+          break;
+        default:
+          event.sender.send(channels.CONFIGURATION, method, dtype, configdata.getConfigData());
+      }
+      break;
+    case operations.UPDATE:
+      switch(dtype){
+        case datatypes.METAINFO:
+          // update metainfo
+          break;
+        case datatypes.FIELD:
+          // update field
+          break;
+        case datatypes.PLOT:
+          // update field
+          break;
+        default:
+          // update global store
+      }
+      break;
+    case operations.DELETE:
+      switch(dtype){
+        case datatypes.METAINFO:
+          // delete metainfo
+          break;
+        case datatypes.FIELD:
+          mainFieldDelete(arg);
+          break;
+        case datatypes.PLOT:
+          // delete plot
+          break;
+        default:
+          // make global store as null
+      }
+      break;
+  }
+
+})
+
+
 
 ipcMain.on(channels.FIELD_VALIDATION, (event, message) => {
   console.log(message);
@@ -123,29 +198,8 @@ ipcMain.on(channels.GET_CONFIGDATA, (event, message) => {
   event.sender.send(channels.GET_CONFIGDATA, configdata.getConfigData());
 });
 
-ipcMain.on(channels.GET_METAINFO, (event) => {
-  console.log("get_metainfo");
-});
+function mainFieldDelete(field){
 
-ipcMain.on(channels.GET_FIELDLIST, (event) => {
-  console.log("get_fieldlist");
-});
-
-ipcMain.on(channels.GET_FIELDINFO, (event) => {
-  console.log("get field_info");
-});
-
-ipcMain.on(channels.GET_OUTPUTINFO, (event) => {
-  console.log("get outputinfo");
-});
-
-ipcMain.on(channels.RESET_CONFIG, (event, type) => {
-  configdata = Configuration.create();
-});
-
-
-
-ipcMain.on(channels.DEL_FIELD, (event, field) => {
   let confirmed = dialog.showMessageBoxSync(mainWindow, {
     type: "warning",
     title: "confirm to delete field",
@@ -160,27 +214,7 @@ ipcMain.on(channels.DEL_FIELD, (event, field) => {
     mainWindow.webContents.send(channels.REFRESH_APP, configdata.getConfigData())
   }
 
-});
-
-ipcMain.on(channels.EDIT_FIELD,(event, field)=>{
-
-})
-
-
-ipcMain.on(channels.ADD_FIELD, (event)=>{
-
-})
-
-
-ipcMain.on(channels.EDIT_METAINFO, (event, meta_info)=>{
-
-  console.log("edit metainfo event released")
-  
-})
-
-ipcMain.on(channels.ADD_METAINFO, (event)=>{
-
-})
+}
 
 ipcMain.on(channels.OPEN_EDITDIALOG, (event, suburl, arg)=>{
   console.log("open edit dialog");
