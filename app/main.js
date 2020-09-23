@@ -1,119 +1,196 @@
-const {app, BrowserWindow, Menu, remote, ipcMain} = require("electron");
+const {
+  app,
+  BrowserWindow,
+  Menu,
+  remote,
+  ipcMain,
+  dialog,
+} = require("electron");
 
-const url = require('url');
-const path = require('path');
-const { add } = require("lodash");
-// const { start } = require("repl");
+const url = require("url");
+const path = require("path");
 
-const {MenuTemplate} = require("./electron/menu_template");
-const { start } = require("repl");
+const { MenuTemplate } = require("./electron/menu_template");
 const { channels } = require("../src/shared");
+const { Configuration } = require("../src/shared/configuration");
+
+// console.log(channels);
 
 let mainWindow = null;
-let addFieldDialog = null;
+let editDialog = null;
 
+let configdata = Configuration.create();
+// console.log(configdata.getMetaInfo())
 
-let configdata = null;
+const startURL =
+  process.env.ELECTRON_START_URL ||
+  url.format({
+    pathname: path.join(__dirname, "../index.html"),
+    protocol: "file:",
+    slashes: true,
+  });
 
+const createWindow = () => {
+  mainWindow = new BrowserWindow({
+    resizable: process.env.NODE_ENV ? true : false,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      defaultFontSize: 14,
+    },
+    show: false,
+  });
 
-const startURL = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname,"../index.html"),
-    protocol: 'file:',
-    slashes: true
+  mainWindow.webContents.on("dom-ready", () => {
+    mainWindow.webContents.openDevTools();
+    mainWindow.show();
+  });
+
+  // mainWindow.on('did-finish-load',()=>{
+  //     console.log("did-finish-load event called")
+  // })
+
+  mainWindow.setTitle("iconfig-maker");
+  mainWindow.loadURL(startURL);
+
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+};
+
+const createeditDialog = exports.createeditDialog = ((suburl) => {
+  editDialog = new BrowserWindow({
+    parent: mainWindow,
+    height: 500,
+    modal: true,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+    },
+    show: false,
+  });
+
+  // console.log(startURL+'/addField');
+  editDialog.loadURL(startURL + suburl);
+
+  process.env.NODE_ENV === "dev"
+    ? editDialog.webContents.openDevTools()
+    : "";
+
+  editDialog.on("closed", () => {
+    console.log("addfielddialog closed");
+    editDialog = null;
+  });
+
+  editDialog.webContents.on("dom-ready", () => {
+    editDialog.show();
+  });
+
+  editDialog.on("hide", () => {
+    console.log("hide event called on addFieldDialog");
+    // console.log(addFieldDialog);
+  });
+
+  editDialog.setTitle("Add Field specifications");
+  editDialog.removeMenu();
 });
 
-const createWindow = ()=>{
 
-    mainWindow = new BrowserWindow({
-        resizable: process.env.NODE_ENV ? true : false,
-        webPreferences:{
-            nodeIntegration: true,
-            enableRemoteModule: true,
-        },
-        show: false,
-    })
+app.whenReady().then(() => {
+  // configdata = Configuration.create();
+  createWindow();
+  Menu.setApplicationMenu(MenuTemplate);
+});
 
-    mainWindow.webContents.on('dom-ready',()=>{
-        mainWindow.webContents.openDevTools();
-        mainWindow.show();
-    })
-    
-    // mainWindow.on('did-finish-load',()=>{
-    //     console.log("did-finish-load event called")
-    // })
+app.on("window-all-closed", () => {
+  configdata = null;
+  app.quit();
+});
 
-    
-    mainWindow.setTitle("iconfig-maker")
-    mainWindow.loadURL(startURL);
+const NavigateToLink = (exports.NavigateToLink = (link) => {
+  mainWindow.webContents.send(channels.NAVIGATE_TO, link);
+});
 
-    mainWindow.on('closed',()=>{
-        mainWindow = null;
-    })
-}
+ipcMain.on(channels.FIELD_VALIDATION, (event, message) => {
+  console.log(message);
+});
 
-const createAddFieldDialog = exports.createAddFieldDialog  = ()=>{
+ipcMain.on(channels.GET_CONFIGDATA, (event, message) => {
+  console.log("get configdata from main.js");
+  // console.log(event);
+  // console.log(configdata.getConfigData())
+  console.log(message);
+  event.sender.send(channels.GET_CONFIGDATA, configdata.getConfigData());
+});
 
-    addFieldDialog = new BrowserWindow({
-        parent: mainWindow,
-        height: 500,
-        modal: true,
-        webPreferences:{
-            nodeIntegration: true,
-            enableRemoteModule: true,
-        },
-        show: false
-    });
+ipcMain.on(channels.GET_METAINFO, (event) => {
+  console.log("get_metainfo");
+});
 
-    // console.log(startURL+'/addField');
-    addFieldDialog.loadURL(startURL+"/add-field-config");
+ipcMain.on(channels.GET_FIELDLIST, (event) => {
+  console.log("get_fieldlist");
+});
 
-    process.env.NODE_ENV === 'dev' ? addFieldDialog.webContents.openDevTools() : ''
+ipcMain.on(channels.GET_FIELDINFO, (event) => {
+  console.log("get field_info");
+});
 
-    addFieldDialog.on('closed',()=>{
-        console.log("addfielddialog closed")
-        addFieldDialog = null;
-    })
+ipcMain.on(channels.GET_OUTPUTINFO, (event) => {
+  console.log("get outputinfo");
+});
 
-    addFieldDialog.webContents.on('dom-ready',()=>{
-        addFieldDialog.show();
-    })
+ipcMain.on(channels.RESET_CONFIG, (event, type) => {
+  configdata = Configuration.create();
+});
 
-    addFieldDialog.on('hide',()=>{
-        console.log("hide event called on addFieldDialog")
-        // console.log(addFieldDialog);
-    })
 
-    addFieldDialog.setTitle("Add Field specifications")
-    addFieldDialog.removeMenu();
-}
 
-// app.on('ready',()=>{
-//     createWindow();
+ipcMain.on(channels.DEL_FIELD, (event, field) => {
+  let confirmed = dialog.showMessageBoxSync(mainWindow, {
+    type: "warning",
+    title: "confirm to delete field",
+    message: `Do you really want to delete - '${field.name}'`,
+    buttons: ["Cancel", "Confirm"],
+    defaultId: 0,
+    cancelId: 0,
+  });
 
-//     Menu.setApplicationMenu(MenuTemplate);
-// });
+  if(confirmed){
+    configdata.removeField(field);
+    mainWindow.webContents.send(channels.REFRESH_APP, configdata.getConfigData())
+  }
 
-app.whenReady().then(()=>{
-    createWindow();
-    Menu.setApplicationMenu(MenuTemplate);
+});
+
+ipcMain.on(channels.EDIT_FIELD,(event, field)=>{
+
 })
 
 
-app.on('window-all-closed',()=>{
-    app.quit();
+ipcMain.on(channels.ADD_FIELD, (event)=>{
+
 })
 
 
-const NavigateToLink = exports.NavigateToLink = (link)=>{
+ipcMain.on(channels.EDIT_METAINFO, (event, meta_info)=>{
 
-    mainWindow.webContents.send(channels.NAVIGATE_TO, link);
-}
-
-ipcMain.on(channels.FIELD_VALIDATION,(event, message)=>{
-    console.log(message);
+  console.log("edit metainfo event released")
+  
 })
 
-// ipcMain.on(channels.SET_STATUSBAR,(event, message)=>{
-//     // console.log("ipcMain.on set_statusbar")
-//     mainWindow.webContents.send(channels.SET_STATUSBAR, message);
-// })
+ipcMain.on(channels.ADD_METAINFO, (event)=>{
+
+})
+
+ipcMain.on(channels.OPEN_EDITDIALOG, (event, suburl, arg)=>{
+  console.log("open edit dialog");
+  console.log(suburl);
+  console.log(arg);
+
+  createeditDialog(suburl);
+})
+
+
+
+
+

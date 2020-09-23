@@ -2,7 +2,10 @@ import React, {useState, useRef} from 'react'
 import {channels} from "../../shared"
 import {Form, Button, Container, Col, Row} from 'react-bootstrap'
 
-const {ipcRenderer, remote} = window.require('electron');
+import {ipcRenderer} from "../App"
+
+
+const {remote} = window.require('electron')
 
 // console.log(remote);
 
@@ -90,7 +93,7 @@ const EditField = ({field={}})=>{
             <Form onSubmit={onAddFieldFormSubmit}>
                 <Row className="mt-3 p-1">
                     <Col xs={6}>
-                        <Form.Group controlId="addfield_name">
+                        <Form.Group controlId="editField_name">
                             <Form.Label>Name</Form.Label>
                             <Form.Control size="sm" type="text" placeholder="name" value={name} onChange={onNameChange} />
                             <Form.Text className="text-muted">
@@ -98,7 +101,7 @@ const EditField = ({field={}})=>{
                             </Form.Text>
                         </Form.Group>
 
-                        <Form.Group controlId="addfield_colno">
+                        <Form.Group controlId="editField_colno">
                             <Form.Label>Column No</Form.Label>
                             <Form.Control size="sm" type="text" placeholder="colno" onChange={onColnoChange} value={colno} />
                             <Form.Text className="text-muted text-info">
@@ -106,9 +109,9 @@ const EditField = ({field={}})=>{
                             </Form.Text>
                         </Form.Group>
 
-                        <Form.Group controlId="addfield_ftype">
+                        <Form.Group controlId="editField_ftype">
                             <Form.Label>Field type</Form.Label>
-                            <Form.Control size="sm" as="select">
+                            <Form.Control size="sm" as="select" custom>
                                 <option value="none">select field</option>
                                 <option value="int">Integer</option>
                                 <option value="float">Float</option>
@@ -119,7 +122,7 @@ const EditField = ({field={}})=>{
                             </Form.Text>
                         </Form.Group>
 
-                        <Form.Group controlId="addfield_factor">
+                        <Form.Group controlId="editField_factor">
                             <Form.Label>Factor</Form.Label>
                             <Form.Control size="sm" type="text" placeholder="factor (default: 1)" value={factor} onChange={factorValidation} />
                             <Form.Text ref={factorHelp} className="text-muted">
@@ -128,7 +131,7 @@ const EditField = ({field={}})=>{
                         </Form.Group>
                     </Col>
                     <Col xs={6}>
-                        <Form.Group controlId="addfield_ifnull">
+                        <Form.Group controlId="editField_ifnull">
                             <Form.Label>Complement Value</Form.Label>
                             <Form.Control size="sm" type="text" placeholder="ifnull (default: null)" value={ifnull} onChange={event => setIfnull(event.target.value)} />
                             <Form.Text className="text-muted">
@@ -136,7 +139,7 @@ const EditField = ({field={}})=>{
                             </Form.Text>
                         </Form.Group>
 
-                        <Form.Group controlId="addfield_nullval">
+                        <Form.Group controlId="editField_nullval">
                             <Form.Label>Possible Null Value</Form.Label>
                             <Form.Control size="sm" type="text" placeholder="nullval (default: null)" value={nullval} onChange={event => setNullval(event.target.value)} />
                             <Form.Text className="text-muted">
@@ -144,7 +147,7 @@ const EditField = ({field={}})=>{
                             </Form.Text>
                         </Form.Group>
 
-                        <Form.Group controlId="addfield_label">
+                        <Form.Group controlId="editField_label">
                             <Form.Label>Label alias for field</Form.Label>
                             <Form.Control size="sm" type="text" placeholder="label (default: null)" value={label} onChange={event => setLabel(event.target.value)} />
                             <Form.Text className="text-muted">
@@ -152,7 +155,7 @@ const EditField = ({field={}})=>{
                             </Form.Text>
                         </Form.Group>
 
-                        <Form.Group controlId="addfield_units">
+                        <Form.Group controlId="editField_units">
                             <Form.Label>Units</Form.Label>
                             <Form.Control size="sm" type="text" placeholder="units (default: null)" value={units} onChange={event => setUnits(event.target.value)} />
                             <Form.Text className="text-muted">

@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 
 import {Route, Switch, useHistory} from 'react-router-dom'
 
 
 
-import Introduction from './main_pages/Introduction'
-import MetaInfo from "./components/MetaInfo"
+import Introduction from './pages/Introduction'
+import EditMetaInfo from "./dialogs/EditMetaInfo"
 import EditField from "./dialogs/EditField"
 
-import NewFile from "./main_pages/NewFile"
-import OpenFile from "./main_pages/OpenFile"
+
+import NewFile from "./pages/NewFile"
+import OpenFile from "./pages/OpenFile"
 import { channels } from '../shared';
 import StatusBar from "./components/StatusBar"
 
@@ -17,7 +18,9 @@ import StatusBar from "./components/StatusBar"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./App.css"
 
-const {ipcRenderer} = window.require("electron")
+export const {ipcRenderer} = window.require("electron");
+
+// console.log(channels);
 
 let sample_field = {
   name: 'height',
@@ -33,70 +36,95 @@ let sample_field = {
 const App = ()=>{
 
   let history = useHistory();
-  let [footerStatus, setFooterStatus] = useState('default status')
+  // let [configstate, setConfigState] = useState(null)
+
+  // useEffect(()=>{
+  //   ipcRenderer.on(channels.GET_CONFIGDATA,)
+  // },[])
 
 
   useEffect(() => {
 
+    // This is for navigation from Menu(mainProcess) to react-router's useHistory(renderProcess)
     const onNavigation = (event, message)=>{
       
-      // let history = useHistory();
-
-      // history.push(message)
       console.log(message);
       history.push(message);
 
     }
+
     ipcRenderer.on(channels.NAVIGATE_TO,onNavigation)
-    // console.log('navigation construction called')
+
+    // ipcRenderer.
+
+    console.log('navigation construction called')
+
 
     return () => {
-      // console.log(' navigation destruction called');
+      console.log(' navigation destruction called');
       ipcRenderer.removeListener(channels.NAVIGATE_TO, onNavigation);
     }
-  })
+  },[history])
 
-  useEffect(() => {
+  // useEffect(()=>{
 
-    const setStatusBar = (event, status)=>{
-        // console.log("before setting the status")
-        setFooterStatus(status)
-    }
-    ipcRenderer.on(channels.SET_STATUSBAR, setStatusBar);
-    // console.log("statusbar construction called");
+  //   ipcRenderer.on(channels.REFRESH_APP,(event, message)=>{
+  //     // console.log(arg1);
+  //     // console.log(arg2);
+  //     setConfigState(message);
+  //     console.log('got data from main.js')
+  //     console.log(message);
+  //     return ()=>{
+  //       console.log('destruction happens in argument based useEffect too')
+  //     }
+  //   })
 
-    return () => {
-      // console.log('statusbar handler destruction')
-      ipcRenderer.removeListener(channels.SET_STATUSBAR, setStatusBar)
-    }
+  //   ipcRenderer.once(channels.GET_CONFIGDATA,(event, message)=>{
+  //     console.log("data on initconfig is ");
+  //     console.log(message);
+  //     setConfigState(message)
+  //   })
 
-  }, [footerStatus])
+  //   if(!configstate){
+  //     ipcRenderer.send(channels.GET_CONFIGDATA,"from App.js")
+  //   }
+
+  // },[configstate])
+
 
   return (
-    <>
       <Switch>
           <Route exact path="/">
-            <Introduction setStatus={setFooterStatus} />
-            <StatusBar footerStatus={footerStatus} />
+            <div className="app-div-wrapper">
+              <Introduction />
+            </div>
+            <StatusBar />
           </Route>
           <Route path="/new-file">
-            <NewFile />
-            <StatusBar footerStatus={footerStatus} />
+            {/* <div className="app-div-wrapper"> */}
+              <NewFile />
+
+            <StatusBar />
           </Route>
-          <Route path="/open-file" component={OpenFile}>
+          <Route path="/open-file">
             <OpenFile />
-            <StatusBar footerStatus={footerStatus} />
+            <StatusBar />
           </Route>
-          <Route path="/open-file/:fileid">
+          <Route path="/open-file/:fileId">
             <OpenFile />
-            <StatusBar footerStatus={footerStatus} />
+            <StatusBar />
           </Route>
-          <Route path="/add-field-config">
+          <Route path="/add-field">
             <EditField field={sample_field} />
           </Route>
+          <Route path="/edit-metainfo">
+            <EditMetaInfo />
+          </Route>
       </Switch>
-    </>
   )
 }
 
 export default App;
+// export const ipcRenderer;
+
+

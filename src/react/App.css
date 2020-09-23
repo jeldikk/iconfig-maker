@@ -1,15 +1,14 @@
-.footer-style{
-  position: absolute;
-  bottom: 0px;
-  padding: 5px;
-  width: 100%;
-  font-size: 15px;
-  background-color: black;
-  color: greenyellow;
-  font-weight:bold;
-  font-family: monospace;
+.app-div-wrapper{
+    padding: 10px;
+    height: calc(100vh - 32px);
+    /* overflow: hidden;; */
+    overflow-y: scroll;
 }
 
-.footer-style:hover{
-  cursor: auto;
+.card-title{
+    font-size: 16px;
+}
+.card-title:hover{
+    /* font-size: 18px; */
+    cursor: pointer;
 }

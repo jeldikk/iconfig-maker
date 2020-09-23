@@ -1,19 +1,24 @@
 import React from "react";
 import { Jumbotron, Container, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import {useStatusInfo} from "../hooks"
 
 import "./Introduction.css";
 
-import { channels } from "../../shared";
+// import { channels } from "../../shared";
 
-const { ipcRenderer, remote } = window.require("electron");
+// const { ipcRenderer, remote } = window.require("electron");
 
-let currentWindow = remote.getCurrentWindow();
-console.log(currentWindow.id);
+// import {ipcRenderer} from "../App"
 
-const Introduction = () => {
+// const {remote} = window.require('electron');
+// let currentWindow = remote.getCurrentWindow();
+// console.log(currentWindow.id);
+
+const Introduction = ({setStatus}) => {
+
   return (
-    <Jumbotron fluid className="p-4 vh-85">
+    <Jumbotron fluid className="h-100">
       <div className="d-flex flex-column h-100">
         <Container className="text-center flex-grow-1">
           <h1 className="font-weight-bold text-monospace">ismartcsv</h1>
@@ -41,11 +46,8 @@ const Introduction = () => {
                 variant="primary"
                 size="lg"
                 block
-                onClick={()=>sendSynchronousMessage('')}
-                onMouseLeave={() => sendSynchronousMessage("")}
-                onMouseEnter={(event) =>
-                  sendSynchronousMessage("click to create a new file")
-                }
+                // onClick={()=>setStatusInfo('')}
+                {...useStatusInfo("click to Add a New File")}
               >
                 Create New File
               </Button>
@@ -57,10 +59,7 @@ const Introduction = () => {
                 variant="info"
                 size="lg"
                 block
-                onMouseEnter={(event) =>
-                  sendSynchronousMessage("click to open a file")
-                }
-                onMouseLeave={(event) => sendSynchronousMessage("")}
+                {...useStatusInfo("click to edit a file")}
                 >
                 Open File
               </Button>
@@ -72,10 +71,10 @@ const Introduction = () => {
   );
 };
 
-function sendSynchronousMessage(message) {
-  //   console.log("sendSynchronousMessage is called");
-//   ipcRenderer.sendToHost(channels.SET_STATUSBAR, message);
-    ipcRenderer.sendTo(currentWindow.id, channels.SET_STATUSBAR, message)
-}
+// function sendStatusMessage(message) {
+//   //   console.log("sendSynchronousMessage is called");
+// //   ipcRenderer.sendToHost(channels.SET_STATUSBAR, message);
+//     ipcRenderer.sendTo(currentWindow.id, channels.SET_STATUSBAR, message)
+// }
 
 export default Introduction;

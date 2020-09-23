@@ -25,7 +25,7 @@ let menu_schema = [
                 label: 'Add Field',
                 click: ()=>{
                     // console.log("Add field button clicked");
-                    mainProcess.createAddFieldDialog();
+                    mainProcess.createeditDialog("/add-field");
                 }
             },
             {
