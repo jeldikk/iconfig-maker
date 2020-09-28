@@ -59,7 +59,7 @@ const NewFile = ({data=null})=>{
         <>
             <MetaInfo data={configstate ? configstate.metainfo : null}/>
             <FieldList data={configstate ? configstate.fieldinfo : []}/>
-            <OutputInfo data={configstate ? configstate.outputinfo : []} />
+            <OutputInfo data={configstate ? configstate.outputinfo : []} fieldList={configstate ? configstate.fieldlist : []} />
             <InterpolationInfo data={configstate ? configstate.interpolationinfo : null}/>
             <PlotInfo data={configstate ? configstate.plotinfo : []}/>
         </>

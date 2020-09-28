@@ -44,7 +44,10 @@ const operations = {
 const datatypes = {
     METAINFO: 'metainfo',
     FIELD: 'field',
-    PLOT: 'plot'
+    OUTPUTINFO: 'outputinfo',
+    INTERPOLATION: 'interpolation',
+    PLOT: 'plot',
+    
 }
 
 // exports.Configuration = Configuration;

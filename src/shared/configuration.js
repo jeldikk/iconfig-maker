@@ -9,6 +9,10 @@ class Configuration{
     #output_info;
     #plot_info;
 
+    #output_enabled;
+    #interpolation_enabled
+    #plot_enabled
+
     constructor(args){
 
         this.#meta_info = {
@@ -70,7 +74,7 @@ class Configuration{
             step: null
         };
 
-        this.#output_info = ['height', 'u', 'v', 'w'];
+        this.#output_info = ['u', 'v'];
 
         this.#plot_info = [
             {
@@ -88,6 +92,11 @@ class Configuration{
                 fields: ['u', 'v', 'w']
             }
         ]
+
+        this.#output_enabled = false;
+        this.#interpolation_enabled = false;
+        this.#plot_enabled = false
+
     }
 
     getConfigData(){
@@ -97,7 +106,11 @@ class Configuration{
             'fieldinfo': this.#field_info,
             'outputinfo': this.#output_info,
             'interpolationinfo': this.#interpolation_info,
-            'plotinfo': this.#plot_info
+            'plotinfo': this.#plot_info,
+            'fieldlist': this.getFieldNames(),
+            'output': this.#output_enabled,
+            'interpolation': this.#interpolation_enabled,
+            'plot': this.#plot_enabled
         }
 
     }
@@ -125,6 +138,23 @@ class Configuration{
     setOutputInfo(arg){
         this.#output_info = arg;
 
+    }
+
+    updateOutputInfo(arg){
+        this.#output_info = [...this.#output_info, arg]
+        console.log(this.#output_info)
+        // if(this.#output_info.length )
+    }
+
+    removeOutputInfo(arg){
+        this.#output_info = this.#output_info.filter((ele)=> ele != arg)
+        console.log(this.#output_info)
+        if(this.#output_info.length === 0){
+            return
+        }
+        else{
+            this.#output_enabled = false;
+        }
     }
 
     getInterpolationInfo(){

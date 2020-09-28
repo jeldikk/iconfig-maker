@@ -4,7 +4,7 @@ import { Card, Form } from "react-bootstrap";
 
 import { useStatusInfo } from "../hooks";
 
-const InterpolationInfo = () => {
+const InterpolationInfo = ({data = null}) => {
 
     let [enabled, setEnabled] = useState(false);
 

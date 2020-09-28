@@ -15,10 +15,10 @@ const StatusBar = ()=>{
             setFooterStatus(message)
         }
 
-        ipcRenderer.on(channels.SET_STATUS, set_status)
+        ipcRenderer.on(channels.STATUSBAR, set_status)
 
         return ()=>{
-            ipcRenderer.removeListener(channels.SET_STATUS, set_status)
+            ipcRenderer.removeListener(channels.STATUSBAR, set_status)
         }
 
     },[footerStatus])

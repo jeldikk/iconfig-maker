@@ -53,7 +53,7 @@ const App = ()=>{
 
     }
 
-    ipcRenderer.on(channels.NAVIGATE_TO,onNavigation)
+    ipcRenderer.on(channels.NAVIGATE,onNavigation)
 
     // ipcRenderer.
 
@@ -62,7 +62,7 @@ const App = ()=>{
 
     return () => {
       console.log(' navigation destruction called');
-      ipcRenderer.removeListener(channels.NAVIGATE_TO, onNavigation);
+      ipcRenderer.removeListener(channels.NAVIGATE, onNavigation);
     }
   },[history])
 

@@ -41,7 +41,7 @@ const FieldDetail = ({ data = null, index}) => {
 
   const renderDetail = () => {
     return <Alert
-      variant="info"
+      variant="danger"
       className="render-detail"
       key={data.name}
       onContextMenu={(event)=>{

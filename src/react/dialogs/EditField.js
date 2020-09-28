@@ -111,7 +111,7 @@ const EditField = ({field={}})=>{
 
                         <Form.Group controlId="editField_ftype">
                             <Form.Label>Field type</Form.Label>
-                            <Form.Control size="sm" as="select" custom>
+                            <Form.Control size="sm" as="select" custom onSelect={()=>console.log('on select called')} onChange={()=>console.log("on change called")}>
                                 <option value="none">select field</option>
                                 <option value="int">Integer</option>
                                 <option value="float">Float</option>

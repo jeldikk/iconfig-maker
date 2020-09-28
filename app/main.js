@@ -14,6 +14,8 @@ const { MenuTemplate } = require("./electron/menu_template");
 const { channels, operations, datatypes } = require("../src/shared");
 const { Configuration } = require("../src/shared/configuration");
 
+const {getFormattedDatetime} = require("./electron/pyapi")
+
 console.log(channels);
 console.log(operations);
 console.log(datatypes)
@@ -95,6 +97,8 @@ const createeditDialog = exports.createeditDialog = ((suburl) => {
 
   editDialog.setTitle("Add Field specifications");
   editDialog.removeMenu();
+
+
 });
 
 
@@ -159,8 +163,12 @@ ipcMain.on(channels.CONFIGURATION, (event, method, dtype, arg)=>{
           // update field
           break;
         case datatypes.PLOT:
-          // update field
+          // update plot
           break;
+        case datatypes.OUTPUTINFO:
+          // update ouputinfo and send data to app using refresh_app
+          console.log('configuration update outputinfo')
+          configdata.updateOutputInfo(arg)
         default:
           // update global store
       }
@@ -176,6 +184,9 @@ ipcMain.on(channels.CONFIGURATION, (event, method, dtype, arg)=>{
         case datatypes.PLOT:
           // delete plot
           break;
+        case datatypes.OUTPUTINFO:
+          console.log("configuration delete outputinfo")
+          configdata.removeOutputInfo(arg)
         default:
           // make global store as null
       }
@@ -185,17 +196,22 @@ ipcMain.on(channels.CONFIGURATION, (event, method, dtype, arg)=>{
 })
 
 
+ipcMain.on(channels.FORMAT_CONVERSION,(event, type, format)=>{
+  getFormattedDatetime(format,(result)=>{
+    console.log(result);
+    if(type === 'file'){
+      event.sender.send(channels.FORMAT_CONVERSION, type, `${result[0]}.csv`)
+    }
+    else{
+      event.sender.send(channels.FORMAT_CONVERSION, type, result[0])
+    }
+    
+  });
+})
+
 
 ipcMain.on(channels.FIELD_VALIDATION, (event, message) => {
   console.log(message);
-});
-
-ipcMain.on(channels.GET_CONFIGDATA, (event, message) => {
-  console.log("get configdata from main.js");
-  // console.log(event);
-  // console.log(configdata.getConfigData())
-  console.log(message);
-  event.sender.send(channels.GET_CONFIGDATA, configdata.getConfigData());
 });
 
 function mainFieldDelete(field){
