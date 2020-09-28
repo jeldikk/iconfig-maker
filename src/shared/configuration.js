@@ -120,7 +120,10 @@ class Configuration{
     }
 
     setMetaInfo(arg){
-        this.#meta_info = arg;
+        this.#meta_info = {
+            ...arg,
+            field_count: this.#field_info.length
+        }
     }
 
     getFieldsInfo(){

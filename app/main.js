@@ -120,7 +120,7 @@ const NavigateToLink = (exports.NavigateToLink = (link) => {
 });
 
 ipcMain.on(channels.CONFIGURATION, (event, method, dtype, arg)=>{
-  // console.log(method, dtype, arg)
+  console.log(method, dtype, arg)
   switch(method){
     case operations.CREATE:
       switch(dtype){
@@ -157,7 +157,9 @@ ipcMain.on(channels.CONFIGURATION, (event, method, dtype, arg)=>{
     case operations.UPDATE:
       switch(dtype){
         case datatypes.METAINFO:
-          // update metainfo
+          console.log(arg)
+          configdata.setMetaInfo(arg)
+          mainWindow.webContents.send(channels.REFRESH_APP, configdata.getConfigData())
           break;
         case datatypes.FIELD:
           // update field

@@ -2,16 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 
 import { Form, Col, Row, Button } from "react-bootstrap";
 
-import { useTimeFormatter } from "../hooks";
+import { useTimeFormatter, cancelButtonHandler, updateMetainfoHandler } from "../hooks";
 
-const EditMetaInfo = ({ type = "new" }) => {
+const EditMetaInfo = ({ data }) => {
   let [delimiter, setDelimiter] = useState("comma");
   let [skiplines, setSkiplines] = useState(0);
   let [enabled, enableFilestamp] = useState(false);
   let [datetimeval, setDatetimeval] = useState("");
   let [fileformatval, setFileformatval] = useState("");
 
-  let timerid = null;
+//   let timerid = null;
   const datetime_response = useRef(null);
   let [fileformat, datetimeformat, convertFormat] = useTimeFormatter();
 
@@ -23,12 +23,15 @@ const EditMetaInfo = ({ type = "new" }) => {
 
   useEffect(() => {
     // convertFileFormat(fileformatval)
-    convertFormat(fileformatval, "file");
+    if(fileformatval)
+        convertFormat(fileformatval, "file");
   }, [fileformatval]);
 
   useEffect(() => {
     console.log("this is executed only because datetime val is changed");
-    convertFormat(datetimeval, "datetime");
+    if(datetimeval)
+        convertFormat(datetimeval, "datetime");
+
   }, [datetimeval]);
 
   const onFilestampleChange = (event) => {
@@ -88,9 +91,19 @@ const EditMetaInfo = ({ type = "new" }) => {
     });
   };
 
+  const make_data = ()=>{
+      return {
+          delimiter: delimiter,
+          skip_lines: skiplines,
+          filename_format: enabled ? fileformatval : null,
+          datetime_format: datetimeval,
+          timestamp_in_filename: enabled
+      }
+  }
+
   return (
     <>
-      <Form className="p-3">
+      <Form className="p-3" {...updateMetainfoHandler(make_data())}>
         <Form.Group className="border border-rounded p-3">
           <Form.Label className="font-weight-bold"> Delimiter :</Form.Label>
           <Col>
@@ -171,10 +184,10 @@ const EditMetaInfo = ({ type = "new" }) => {
         </Form.Group>
 
         <div className="d-flex flex-row">
-          <Button variant="primary" className="mx-3">
+          <Button variant="primary" type='submit' className="mx-3">
             Submit
           </Button>
-          <Button variant="danger" className="mx-3">
+          <Button variant="danger" className="mx-3" onClick={cancelButtonHandler}>
             Cancel
           </Button>
         </div>

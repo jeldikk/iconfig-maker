@@ -6,7 +6,6 @@ const {remote} = window.require('electron');
 
 const currentWindow = remote.getCurrentWindow();
 
-// REFRESH_APP = channels.CONFIGURATION + operations.UPDATE
 
 export const useFieldDeleter = () => {
     return (field) =>{
@@ -115,4 +114,22 @@ export const useTimeFormatter = () => {
 
 
     return [fileformat, dateformat, convertTime]
+}
+
+export const updateMetainfoHandler = (data)=>{
+
+    return {
+        onSubmit: (event)=>{
+            console.log('submit handler called with data', data)
+            event.preventDefault();
+            ipcRenderer.send(channels.CONFIGURATION, operations.UPDATE, datatypes.METAINFO, data);
+            currentWindow.close();
+
+        }
+    }
+
+}
+
+export const cancelButtonHandler = ()=>{
+    currentWindow.close();
 }
